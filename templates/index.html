@@ -9,15 +9,16 @@
         <h1 class="title">Incident Analysis Dashboard</h1>
         <h2>Select an Option:</h2>
         <div class="form-container">
+            <!-- Form to upload multiple PDFs -->
             <form action="/upload" method="post" enctype="multipart/form-data">
-                <label for="file" class="form-label">Upload PDF:</label>
-                <input type="file" id="file" name="file" class="file-input">
-                <button type="submit" class="form-button">Upload</button>
+                <label for="files" class="form-label">Upload PDFs:</label>
+                <input type="file" id="files" name="files" multiple class="file-input">
+                <button type="submit" class="form-button">Upload PDFs</button>
             </form>
-            <form action="/process_url" method="post" class="form-url">
-                <label for="file_url" class="form-label">Provide PDF URL:</label>
-                <input type="url" id="file_url" name="file_url" class="url-input" placeholder="Enter a valid URL">
-                <button type="submit" class="form-button">Submit URL</button>
+            <form action="/process_url" method="post">
+                <label for="file_urls" class="form-label">Provide PDF URLs (comma-separated):</label>
+                <textarea id="file_urls" name="file_urls" class="url-input" placeholder="Enter URLs separated by commas"></textarea>
+                <button type="submit" class="form-button">Submit URLs</button>
             </form>
         </div>
     </div>

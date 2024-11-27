@@ -34,40 +34,55 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload_pdf():
     try:
-        file = request.files.get('file')
-        if not file or file.filename == '':
-            return redirect(url_for('error', message="No file selected. Please upload a valid file."))
+        files = request.files.getlist('files')  # Get a list of uploaded files
+        if not files or all(file.filename == '' for file in files):
+            return redirect(url_for('error', message="No files selected. Please upload valid files."))
 
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
+        all_incidents = []  # To store data from all PDFs
+        for file in files:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
 
-        # Extract incidents and save as CSV
-        incidents_df = extract_incidents(file_path)
+            # Extract incidents from each file and append to the list
+            incidents_df = extract_incidents(file_path)
+            all_incidents.append(incidents_df)
+
+        # Combine all incidents into a single DataFrame
+        combined_df = pd.concat(all_incidents, ignore_index=True)
         incidents_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'incidents.csv')
-        incidents_df.to_csv(incidents_csv_path, index=False)
+        combined_df.to_csv(incidents_csv_path, index=False)
 
         return redirect(url_for('upload_success'))
     except Exception as e:
-        return redirect(url_for('error', message=f"Error processing file: {str(e)}"))
+        return redirect(url_for('error', message=f"Error processing files: {str(e)}"))
 
 
 @app.route('/process_url', methods=['POST'])
 def process_url():
     try:
-        file_url = request.form.get('file_url')
-        if not file_url:
-            return redirect(url_for('error', message="No URL provided. Please provide a valid URL."))
+        file_urls = request.form.get('file_urls')  # Get a list of URLs
+        file_urls = [url.strip() for url in file_urls.split(',') if url.strip()]
+        if not file_urls or all(url.strip() == '' for url in file_urls):
+            return redirect(url_for('error', message="No URLs provided. Please provide valid URLs."))
+        print(file_urls)
+        all_incidents = []  # To store data from all URLs
+        for file_url in file_urls:
+            status, file_path = fetch_incidents(file_url)
+            if status == 200:
+                incidents_df = extract_incidents(file_path)
+                all_incidents.append(incidents_df)
+            else:
+                return redirect(url_for('error', message=f"Failed to fetch the file from URL: {file_url}. Status: {status}"))
 
-        status, file_path = fetch_incidents(file_url)
-        if status == 200:
-            incidents_df = extract_incidents(file_path)
-            incidents_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'incidents.csv')
-            incidents_df.to_csv(incidents_csv_path, index=False)
-            return redirect(url_for('upload_success'))
-        else:
-            return redirect(url_for('error', message=f"Failed to fetch the file from the URL. Status: {status}"))
+        # Combine all incidents into a single DataFrame
+        combined_df = pd.concat(all_incidents, ignore_index=True)
+        incidents_csv_path = os.path.join(app.config['UPLOAD_FOLDER'], 'incidents.csv')
+        combined_df.to_csv(incidents_csv_path, index=False)
+
+        return redirect(url_for('upload_success'))
     except Exception as e:
-        return redirect(url_for('error', message=f"Error processing URL: {str(e)}"))
+        return redirect(url_for('error', message=f"Error processing URLs:"))
+
 
 
 @app.route('/upload_success')
@@ -105,7 +120,6 @@ def clustering():
 
     # Parse the 'Date / Time' column
     data['Date / Time'] = pd.to_datetime(data['Date / Time'])
-    data['Day of the Week'] = data['Date / Time'].dt.day_name()  # Extract day of the week
     data['Time of Day'] = data['Date / Time'].dt.hour.apply(
         lambda x: 'Morning' if 6 <= x < 12 else
                   'Afternoon' if 12 <= x < 18 else
@@ -113,18 +127,35 @@ def clustering():
                   'Night'
     )  # Categorize time of day
 
-    # Group and create clustering data
-    clustering_data = data.groupby(['Day of the Week', 'Time of Day']).size().unstack(fill_value=0)
+    # Check if multiple days are present in the dataset
+    unique_dates = data['Date / Time'].dt.date.nunique()
+    if unique_dates > 1:
+        # Multi-day clustering: Use 'Day of the Week' and 'Time of Day'
+        data['Day of the Week'] = data['Date / Time'].dt.day_name()  # Extract day of the week
+        clustering_data = data.groupby(['Day of the Week', 'Time of Day']).size().unstack(fill_value=0)
 
-    # Plot the heatmap
-    plt.figure(figsize=(12, 8))
-    sns.heatmap(clustering_data, annot=True, fmt="d", cmap="coolwarm")
-    plt.title("Incident Clustering by Day and Time")
-    plt.xlabel("Time of Day")
-    plt.ylabel("Day of the Week")
+        # Plot the heatmap
+        plt.figure(figsize=(12, 8))
+        sns.heatmap(clustering_data, annot=True, fmt="d", cmap="coolwarm")
+        plt.title("Incident Clustering by Day and Time")
+        plt.xlabel("Time of Day")
+        plt.ylabel("Day of the Week")
+    else:
+        # Single-day clustering: Focus only on 'Time of Day'
+        clustering_data = data['Time of Day'].value_counts().reindex(['Morning', 'Afternoon', 'Evening', 'Night'], fill_value=0)
 
+        # Plot the bar chart
+        plt.figure(figsize=(12, 6))
+        clustering_data.plot(kind='bar', color='skyblue')
+        plt.title("Incident Clustering by Time of Day")
+        plt.xlabel("Time of Day")
+        plt.ylabel("Number of Incidents")
+        plt.xticks(rotation=0)
+
+    # Save and return the plot
     plot_url = save_plot_as_image(plt)
     return render_template('visualization.html', plot_url=plot_url)
+
 
 
 
@@ -147,7 +178,7 @@ def bar_graph():
     plot_url = save_plot_as_image(plt)
     return render_template('visualization.html', plot_url=plot_url)
 
-
+# Visualization 3: Incidents Over Time (Daily/Hourly Trends):
 @app.route('/visualization/incidents_over_time', methods=['GET'])
 def incidents_over_time():
     data_path = os.path.join(app.config['UPLOAD_FOLDER'], 'incidents.csv')
@@ -161,25 +192,42 @@ def incidents_over_time():
     if 'Date / Time' not in data.columns:
         return jsonify({'error': "'Date / Time' column is missing in the data."})
 
-    # Parse 'Date / Time' and extract the date
+    # Parse 'Date / Time'
     data['Date / Time'] = pd.to_datetime(data['Date / Time'])
-    data['Date'] = data['Date / Time'].dt.date  # Extract the date (without time)
+    
+    # Check if the data is for a single day or multiple days
+    unique_dates = data['Date / Time'].dt.date.nunique()
 
-    # Count incidents per day
-    daily_incidents = data.groupby('Date').size()
+    if unique_dates > 1:
+        # Multi-day data: Count incidents per day
+        data['Date'] = data['Date / Time'].dt.date  # Extract the date (without time)
+        daily_incidents = data.groupby('Date').size()
 
-    # Create the line chart
-    plt.figure(figsize=(12, 6))
-    daily_incidents.plot(kind='line', marker='o', color='blue')
-    plt.title("Number of Incidents Over Time")
-    plt.xlabel("Date")
-    plt.ylabel("Number of Incidents")
-    plt.xticks(rotation=45)
+        # Create the line chart
+        plt.figure(figsize=(12, 6))
+        daily_incidents.plot(kind='line', marker='o', color='blue')
+        plt.title("Number of Incidents Over Time")
+        plt.xlabel("Date")
+        plt.ylabel("Number of Incidents")
+        plt.xticks(rotation=45)
+    else:
+        # Single-day data: Count incidents per hour
+        data['Hour'] = data['Date / Time'].dt.hour
+        hourly_incidents = data.groupby('Hour').size()
+
+        # Create the line chart
+        plt.figure(figsize=(12, 6))
+        hourly_incidents.plot(kind='line', marker='o', color='blue')
+        plt.title("Number of Incidents Over Time (Hourly)")
+        plt.xlabel("Hour of the Day")
+        plt.ylabel("Number of Incidents")
+        plt.xticks(range(0, 24), rotation=45)
 
     # Save and render the plot
     plot_url = save_plot_as_image(plt)
     return render_template('visualization.html', plot_url=plot_url)
 
+# Visualization 4: Pie Chart of Incidents by Day or Nature
 @app.route('/visualization/pie_chart', methods=['GET'])
 def pie_chart():
     data_path = os.path.join(app.config['UPLOAD_FOLDER'], 'incidents.csv')
@@ -193,24 +241,41 @@ def pie_chart():
     if 'Date / Time' not in data.columns:
         return jsonify({'error': "'Date / Time' column is missing in the data."})
 
-    # Parse the 'Date / Time' column to derive 'Day of the Week'
+    # Parse 'Date / Time'
     data['Date / Time'] = pd.to_datetime(data['Date / Time'])
-    data['Day of the Week'] = data['Date / Time'].dt.day_name()  # Extract day of the week
+    unique_dates = data['Date / Time'].dt.date.nunique()
 
-    # Count incidents by day of the week
-    day_counts = data['Day of the Week'].value_counts()
+    if unique_dates > 1:
+        # Multi-day data: Distribution by Day of the Week
+        data['Day of the Week'] = data['Date / Time'].dt.day_name()
+        day_counts = data['Day of the Week'].value_counts()
 
-    # Create the pie chart
-    plt.figure(figsize=(8, 8))
-    day_counts.plot(kind='pie', autopct='%1.1f%%', startangle=140, colormap='Pastel1')
-    plt.title("Crime Distribution by Day of the Week")
-    plt.ylabel("")  # Hide the y-label for better aesthetics
+        # Create the pie chart
+        plt.figure(figsize=(8, 8))
+        day_counts.plot(kind='pie', autopct='%1.1f%%', startangle=140, colormap='Pastel1')
+        plt.title("Incident Distribution by Day of the Week")
+        plt.ylabel("")  # Hide the y-label for better aesthetics
+    else:
+        # Single-day data: Distribution by Nature
+        nature_counts = data['Nature'].value_counts()
+
+        # Limit to top 10 most frequent categories
+        top_10 = nature_counts[:10]
+        others_count = nature_counts[10:].sum()
+        if others_count > 0:
+            top_10["Others"] = others_count
+
+        # Create the pie chart
+        plt.figure(figsize=(8, 8))
+        top_10.plot(kind='pie', autopct='%1.1f%%', startangle=140, colormap='Pastel2')
+        plt.title("Incident Distribution by Nature")
+        plt.ylabel("")  # Hide the y-label for better aesthetics
 
     # Save and render the plot
     plot_url = save_plot_as_image(plt)
     return render_template('visualization.html', plot_url=plot_url)
 
-
+# Visualization 5: Top Locations by Incidents
 @app.route('/visualization/incidents_by_location', methods=['GET'])
 def incidents_by_location():
     data_path = os.path.join(app.config['UPLOAD_FOLDER'], 'incidents.csv')
