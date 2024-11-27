@@ -41,7 +41,9 @@ This project focuses on creating an end-to-end data visualization pipeline for p
 
 ## Demo Program
 
-[Watch Demo Video](#)
+[![Watch the video](https://img.youtube.com/vi/gdquTTwzoUQ/maxresdefault.jpg)](https://youtu.be/gdquTTwzoUQ)
+
+### [Watch Demo Video](https://youtu.be/gdquTTwzoUQ)
 
 ## Folder Structure
 ```
