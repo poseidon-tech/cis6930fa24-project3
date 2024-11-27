@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='error_style.css') }}">
+    <title>Error</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Oops! Something Went Wrong</h1>
+        <p class="error-message">{{ message }}</p>
+        <div class="button-container">
+            <a href="/" class="back-button">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+/* General body styling for the success page */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container for the success message */
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+}
+
+/* Title styling */
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Paragraph message styling */
+.container p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Button container for alignment */
+.button-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Success button styling */
+.success-button {
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.success-button:hover {
+    background-color: #218838;
+}
+
+/* Back button styling */
+.back-button {
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #5a6268;
+}

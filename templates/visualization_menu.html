@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Visualization Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Visualization Dashboard</h1>
+        <div class="options">
+            <a href="/visualization/clustering" class="option-button">Clustering by Day and Time</a>
+            <a href="/visualization/bar_graph" class="option-button">Bar Graph of Incidents by Nature</a>
+            <a href="/visualization/incidents_over_time" class="option-button">Incidents Over Time</a>
+            <a href="/visualization/pie_chart" class="option-button">Pie Chart of Incidents by Day</a>
+            <a href="/visualization/incidents_by_location" class="option-button">Top Locations by Incidents</a>
+        </div>
+        <a href="/" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>

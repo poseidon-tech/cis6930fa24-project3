@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='visualization_style.css') }}">
+    <title>Visualization</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Visualization</h1>
+        <div class="plot-container">
+            <img src="data:image/png;base64,{{ plot_url }}" alt="Visualization" class="plot">
+        </div>
+        <div class="button-container">
+            <a href="/visualization_menu" class="nav-button">View Visualizations</a>
+            <a href="/" class="nav-button">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

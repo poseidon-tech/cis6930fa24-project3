@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home_style.css') }}">
+    <title>Incident Analysis Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Incident Analysis Dashboard</h1>
+        <h2>Select an Option:</h2>
+        <div class="form-container">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <label for="file" class="form-label">Upload PDF:</label>
+                <input type="file" id="file" name="file" class="file-input">
+                <button type="submit" class="form-button">Upload</button>
+            </form>
+            <form action="/process_url" method="post" class="form-url">
+                <label for="file_url" class="form-label">Provide PDF URL:</label>
+                <input type="url" id="file_url" name="file_url" class="url-input" placeholder="Enter a valid URL">
+                <button type="submit" class="form-button">Submit URL</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

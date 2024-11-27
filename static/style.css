@@ -1,0 +1,73 @@
+/* General styling for the body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container for the visualization menu */
+.container {
+    text-align: center;
+    max-width: 800px; /* Increased width */
+    width: 90%; /* Responsive width */
+    padding: 30px; /* Increased padding */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.title {
+    font-size: 28px; /* Slightly larger font size */
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #4a4a4a;
+}
+
+/* Styling for the visualization options */
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Increased spacing between buttons */
+}
+
+.option-button {
+    display: block;
+    padding: 15px 20px; /* Larger padding for bigger buttons */
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    font-size: 18px; /* Increased font size */
+    font-weight: bold;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.option-button:hover {
+    background-color: #0056b3;
+}
+
+/* Back button styling */
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 20px; /* Larger padding for a bigger button */
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px; /* Slightly larger font size */
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #5a6268;
+}
