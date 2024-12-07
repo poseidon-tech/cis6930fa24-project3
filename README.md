@@ -47,7 +47,7 @@ This project focuses on creating an end-to-end data visualization pipeline for p
 
 [![Watch the video](https://img.youtube.com/vi/dl01pVJzB64/maxresdefault.jpg)](https://youtu.be/dl01pVJzB64)
 
-### [Watch ML Clustering Visualization](https://youtu.be/dl01pVJzB64) (Not there in First Video)
+### [Watch ML Clustering Visualization](https://youtu.be/dl01pVJzB64) (Not Included in Initial Demo)
 
 ## Folder Structure
 ```
@@ -73,6 +73,9 @@ This project focuses on creating an end-to-end data visualization pipeline for p
 |       style.css
 |       success_page.css
 |       visualization_style.css
+|
++----tests
+|        app_test.py
 |
 \---templates
         error.html
@@ -114,7 +117,7 @@ This project focuses on creating an end-to-end data visualization pipeline for p
 
 ## Visualization Graphs
 
-1. **Incident Clustering by Day and Time (or Periods):** A heatmap providing insights into how incidents are distributed across different days of the week and times of the day for multiple files. For single-day data, a bar chart shows incidents clustered by time periods (Morning, Afternoon, Evening, Night). The heatmap or bar chart is particularly useful for identifying temporal patterns in incident occurrences and planning resource allocation accordingly.
+1. **The Incident Clustering by Nature (K-Means):** This visualization uses scatter plots to group incidents based on their "Nature," highlighting distinct clusters with unique colors and labels showing dominant incident types, aiding in pattern recognition and targeted analysis. It employs a TfidfVectorizer for text vectorization and K-Means clustering to organize incidents into distinct clusters, each represented by a unique color
 2. **Bar Graph of Incidents by Nature:**  This bar graph visualizes the frequency of incidents categorized by their nature (e.g., theft, assault, public intoxication), where each bar represents a specific type of incident, and the height of the bar indicates its frequency. This graph helps in understanding which types of incidents are most common, aiding stakeholders such as law enforcement or community planners in focusing their efforts on the most prevalent issues.
 3. **Incidents Over Time (Daily/Hourly Trends):**  A line chart that shows the trend of incidents recorded over a period of days for multiple files, with the x-axis representing the dates and the y-axis showing the number of incidents for each date. For single-day data, the chart dynamically adapts to show incidents over time on an hourly basis, providing insights into peak hours. This visualization highlights trends such as spikes or drops in incident counts during specific periods (e.g., holidays, weekends), providing valuable insights for trend analysis and resource planning to mitigate future surges.
 4. **Pie Chart of Incidents by Day or Nature:** For multiple files, this pie chart breaks down the proportion of incidents by the day of the week, with each slice representing the percentage of incidents occurring on a specific day and labels showing percentages for clarity. For single-day data, the pie chart displays the proportion of incidents by their nature, focusing on the top 10 most frequent incident types, with remaining categories grouped under "Others" for clarity. This visualization provides a concise and clear representation of incident distribution patterns, enabling better scheduling, resource allocation, and targeted interventions based on incident frequency and type.
@@ -134,7 +137,8 @@ This project focuses on creating an end-to-end data visualization pipeline for p
 - Fetches and processes data directly from a user-provided URL by downloading the specified PDF file, extracting the relevant incident data, saving it in CSV format, and ensuring the data is ready for visualization while handling any errors gracefully.
 
 ### Visualization Routes:
-- `/visualization/clustering`: Displays clustering of incidents by day and time.
+- `/visualization/ml_clustering`: Displays clustering of incident nature.
+- `/visualization/clustering`: Displays grouping of incidents by day and time.
 - `/visualization/bar_graph`: Displays a bar graph of incidents by nature.
 - `/visualization/incidents_over_time`: Shows a line graph of incidents over time.
 - `/visualization/pie_chart`: Displays a pie chart of incidents by the day of the week.
@@ -156,9 +160,39 @@ This is a helper function for `extract_incidents(pdf_filepath)`. It uses regex t
 ### `check_page(page)`
 This is a helper function for `extract_incidents(pdf_filepath)`. It returns True if page is not empty else returns False.
 
+## `test_app.py`
+
+**Functions in `test_app.py`:**
+
+### `client()`
+This fixture sets up a test client and a temporary directory for testing. It configures the app for testing and provides a client instance to simulate requests during the tests.
+
+### `test_index_page(client)`
+This function tests the `/` route (index page) to ensure it loads successfully. It checks that the status code is `200` and that the page contains the expected text, "Incident Analysis Dashboard".
+
+### `test_visualization_clustering(client)`
+This function tests the `/visualization/clustering` route. It simulates accessing the clustering visualization without any data uploaded and checks that the correct error message ("No processed data found") is displayed.
+
+### `test_ml_clustering(client)`
+This function tests the `/visualization/ml_clustering` route. It verifies that accessing the ML clustering visualization without any processed data results in an appropriate error message.
+
+### `test_pie_chart(client)`
+This function tests the `/visualization/pie_chart` route. It ensures that attempting to access the pie chart visualization without data returns the correct error message.
+
+### `test_bar_graph(client)`
+This function tests the `/visualization/bar_graph` route. It verifies that accessing the bar graph visualization without data results in the expected error message.
+
+### `test_top_locations(client)`
+This function tests the `/visualization/incidents_by_location` route. It ensures that accessing the top locations visualization without any processed data returns the correct error message.
+
+### `test_incidents_over_time(client)`
+This function tests the `/visualization/incidents_over_time` route. It verifies that attempting to access the incidents over time visualization without data results in the appropriate error message.
+
+
 ## Assumptions and Limitations
 
 - The input PDF or URL must follow a predefined format for proper data extraction.
+- Clustering may not be highly accurate and might display incorrect results.
 - Limited to visualizing pre-defined insights; additional customization requires code changes.
 - Current implementation assumes clean data; handling complex errors might need enhancements.
 

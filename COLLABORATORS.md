@@ -4,7 +4,7 @@ GeeksforGeeks | https://www.geeksforgeeks.org | Assisted in understanding data m
 
 StackOverflow | https://stackoverflow.com | Provided solutions for debugging Flask applications, handling multi-threaded environments with Matplotlib, and implementing effective file upload features.
 
-ChatGPT | https://chatgpt.com/ | Helped explain visualization concepts
+ChatGPT | https://chatgpt.com/ | Helped explain visualization concepts,UI and testing API end points
 
 Flask Documentation | https://flask.palletsprojects.com | Helped with understanding Flask routing, form handling, and integration with HTML templates for rendering dynamic web pages.
 
