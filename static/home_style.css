@@ -1,92 +1,128 @@
-/* General body styling for the home page */
+/* General body styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7fc;
+    background: linear-gradient(to bottom right, #007bff, #4facfe);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-}
-
-/* Container for the home page content */
-.container {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    text-align: center;
-    max-width: 600px;
-    width: 90%;
-}
-
-/* Title styling */
-.title {
-    font-size: 28px;
-    font-weight: bold;
     color: #333;
-    margin-bottom: 20px;
+}
+
+/* Outer container for overall layout */
+.outer-container {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    width: 90%;
+    max-width: 700px;
+    text-align: center;
+}
+
+/* Header styling */
+header {
+    margin-bottom: 30px;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #004c97;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #555;
+    font-weight: 400;
 }
 
 /* Form container styling */
 .form-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
 }
 
-/* Label styling */
-.form-label {
-    font-size: 16px;
-    margin-bottom: 5px;
-    color: #555;
-    display: block;
+/* Section for individual forms */
+.form-section {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* File input and URL input styling */
+.form-title {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* File and URL input styling */
 .file-input, .url-input {
     width: 100%;
-    padding: 10px;
-    font-size: 14px;
+    padding: 12px;
+    font-size: 15px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
     box-sizing: border-box;
+    outline: none;
+    transition: all 0.3s ease;
 }
 
-/* Form buttons styling */
+.file-input:focus, .url-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Button styling */
 .form-button {
-    background-color: #007bff;
+    background: linear-gradient(to right, #007bff, #4facfe);
     color: white;
+    font-size: 16px;
+    font-weight: 600;
     border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    font-size: 14px;
+    border-radius: 8px;
+    padding: 12px 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .form-button:hover {
-    background-color: #0056b3;
+    background: linear-gradient(to right, #0056b3, #3576e0);
+    transform: translateY(-2px);
 }
 
-/* Additional styles for URL form */
-.form-url {
-    margin-top: 10px;
+/* Divider styling */
+.divider {
+    font-size: 18px;
+    font-weight: 600;
+    color: #999;
+    margin: 0 auto;
+    text-align: center;
 }
 
-/* Responsive design adjustments */
+/* Responsive styling */
 @media (max-width: 768px) {
-    .container {
+    .outer-container {
         padding: 20px;
     }
 
-    .title {
-        font-size: 24px;
+    .form-title {
+        font-size: 18px;
+    }
+
+    .file-input, .url-input {
+        font-size: 14px;
     }
 
     .form-button {
-        font-size: 12px;
+        font-size: 14px;
     }
 }

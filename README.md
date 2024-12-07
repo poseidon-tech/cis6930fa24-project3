@@ -45,6 +45,10 @@ This project focuses on creating an end-to-end data visualization pipeline for p
 
 ### [Watch Demo Video](https://youtu.be/gdquTTwzoUQ)
 
+[![Watch the video](https://img.youtube.com/vi/dl01pVJzB64/maxresdefault.jpg)](https://youtu.be/dl01pVJzB64)
+
+### [Watch ML Clustering Visualization](https://youtu.be/dl01pVJzB64) (Not there in First Video)
+
 ## Folder Structure
 ```
 |   COLLABORATORS.md

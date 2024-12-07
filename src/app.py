@@ -1,10 +1,13 @@
 from flask import Flask, request, render_template, redirect, url_for, jsonify
 from main import fetch_incidents, extract_incidents  # Import functions from Assignment 0
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
 import pandas as pd
 import os
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 from io import BytesIO
 import base64
 matplotlib.use('Agg') 
@@ -302,6 +305,70 @@ def incidents_by_location():
     # Save and render the plot
     plot_url = save_plot_as_image(plt)
     return render_template('visualization.html', plot_url=plot_url)
+
+@app.route('/visualization/ml_clustering', methods=['GET'])
+def ml_clustering_scatter_improved_v2():
+    # Ensure incidents.csv exists
+    data_path = os.path.join(app.config['UPLOAD_FOLDER'], 'incidents.csv')
+    if not os.path.exists(data_path):
+        return jsonify({'error': 'No processed data found! Please upload or process a file first.'})
+
+    # Load the data
+    data = pd.read_csv(data_path)
+
+    # Ensure the 'Nature' column exists
+    if 'Nature' not in data.columns:
+        return jsonify({'error': "'Nature' column is missing in the data."})
+
+    # Vectorize the 'Nature' column for clustering
+    vectorizer = TfidfVectorizer(stop_words='english')
+    X = vectorizer.fit_transform(data['Nature'])
+
+    # Perform K-Means clustering
+    n_clusters = 5  # Number of clusters
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    data['Cluster'] = kmeans.fit_predict(X)
+
+    # Assign cluster labels
+    cluster_labels = {}
+    for cluster in range(n_clusters):
+        cluster_labels[cluster] = ", ".join(
+            data[data['Cluster'] == cluster]['Nature'].value_counts().index[:4]
+        )
+
+    # Create a scatter plot with cluster coloring
+    plt.figure(figsize=(14, 8))  # Increase graph area
+    colors = ['red', 'blue', 'green', 'orange', 'purple']
+    for cluster in range(n_clusters):
+        cluster_data = data[data['Cluster'] == cluster]
+        plt.scatter(
+            np.random.rand(len(cluster_data)),  # Randomized x-axis for scatter effect
+            range(len(cluster_data)),
+            c=colors[cluster],
+            label=f"Cluster {cluster}: {cluster_labels[cluster]}",
+            alpha=0.6,
+            edgecolors='w'
+        )
+    
+    plt.title("Incident Clustering by Nature (K-Means) K =5 ", fontsize=16)
+    plt.xlabel("X-Axis (Clusters)", fontsize=12)
+    plt.ylabel("Incident Instances", fontsize=12)
+
+    # Move legend further outside the plot
+    plt.legend(
+        title="Clusters",
+        bbox_to_anchor=(1.15, 1),  # Further outside
+        loc='upper left',
+        fontsize='small',  # Reduce font size
+        title_fontsize='medium',
+        frameon=False
+    )
+    plt.tight_layout()
+
+    # Save and return the plot
+    plot_url = save_plot_as_image(plt)
+    return render_template('visualization.html', plot_url=plot_url)
+
 
 
 
